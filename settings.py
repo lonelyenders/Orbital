@@ -11,7 +11,7 @@ screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREE
 
 screen_width = 1080
 screen_height = 720
-screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
+screen = pygame.display.set_mode((screen_width, screen_height))
 
 # game screen title
 pygame.display.set_caption("The Wall")
