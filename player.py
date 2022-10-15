@@ -16,11 +16,15 @@ class Player(pygame.sprite.Sprite):
         self.velocity = 10
         self.jump_height = 20
         self.jump_count = 0
+        self.in_the_air = False
 
     def jump(self):
         self.gravity = - self.jump_height
         self.rect.y -= self.jump_height
         self.jump_count += 1
+        self.in_the_air = True
+        pygame.mixer.music.load('assets/swing.mp3')
+        pygame.mixer.music.play()
 
     def animation_on(self):
         self.angle -= self.velocity

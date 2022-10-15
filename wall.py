@@ -1,5 +1,4 @@
 import pygame
-import settings
 
 
 class Wall(pygame.sprite.Sprite):
@@ -15,8 +14,7 @@ class Wall(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = pos_x
         self.rect.y = pos_y
-
-        self.wall_height_min = 200
-        self.wall_height_max = 300
         self.wall_width_min = 100
         self.wall_width_max = 200
+        self.wall_height_min = 200
+        self.wall_height_max = 400
