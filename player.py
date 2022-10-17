@@ -6,7 +6,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.width = 50
         self.height = 50
-        self.image = pygame.image.load("assets/cube_blue.png")
+        self.image = pygame.image.load("assets/cube.jpg")
         self.origin_image = self.image
         self.angle = 0
         self.rect = self.image.get_rect()
@@ -23,8 +23,6 @@ class Player(pygame.sprite.Sprite):
         self.rect.y -= self.jump_height
         self.jump_count += 1
         self.in_the_air = True
-        pygame.mixer.music.load('assets/swing.mp3')
-        pygame.mixer.music.play()
 
     def animation_on(self):
         self.angle -= self.velocity
