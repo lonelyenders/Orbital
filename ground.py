@@ -6,7 +6,7 @@ class Ground(pygame.sprite.Sprite):
         super().__init__()
         self.width = 1080
         self.height = 100
-        self.image = pygame.image.load("assets/laser.jpg")
+        self.image = pygame.image.load("assets/laser.jpg").convert()
         self.image = pygame.transform.scale(self.image, (1080, self.height))
         self.rect = self.image.get_rect()
         self.rect.x = pos_x

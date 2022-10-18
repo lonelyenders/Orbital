@@ -24,14 +24,11 @@ async def main():
             self.game_over = False
 
             # background setup
-            self.background_image = pygame.image.load('assets/city.jpg')
-            self.background_image_rect = self.background_image.get_rect()
-            self.background_image_rect.x = settings.screen_width
-            self.background_image_rect.y = settings.screen_height
+            self.background_image = pygame.image.load('assets/city.jpg').convert()
+            self.background_image = pygame.transform.scale(self.background_image, (settings.screen_width, settings.screen_height))
 
             # music setup
             pygame.mixer.music.load('assets/hackers.mp3')
-            pygame.mixer.music.set_volume(0.3)
             pygame.mixer.music.play()
 
             # texts setup
@@ -49,10 +46,11 @@ async def main():
             self.all_walls.add(self.wall_start)
 
             # ground setup
-            self.ground = Ground(- settings.screen_width / 2, settings.screen_height - 100)
-            self.ground_2 = Ground(settings.screen_width / 2, settings.screen_height - 100)
+            self.ground = Ground(0, settings.screen_height - 100)
+            self.ground_2 = Ground(1080, settings.screen_height - 100)
+            self.ground_3 = Ground(0, settings.screen_height - 100)
             self.all_grounds = pygame.sprite.Group()
-            self.all_grounds.add(self.ground, self.ground_2)
+            self.all_grounds.add(self.ground_3, self.ground, self.ground_2)
 
         def events(self):
             for event in pygame.event.get():
@@ -72,11 +70,11 @@ async def main():
                     self.player.jump()
 
                 # click on the play button for start game and reset the game
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN and self.game_over is True:
                     if self.texts.play_button_rect.collidepoint(event.pos):
                         self.is_playing = True
                         self.texts.score_value = 0
-                        self.all_grounds.add(self.ground, self.ground_2)
+                        self.all_grounds.add(self.ground_3, self.ground, self.ground_2)
                         pygame.mixer.music.play()
 
             # start player animation if the player is in the air
@@ -98,84 +96,41 @@ async def main():
                 self.wall.rect.x -= self.scrolling_speed
 
             # ground respawn
-            if self.ground.rect.right <= 0:
-                self.ground.rect.x = settings.screen_width
+            if self.ground.rect.right < 0:
+                self.ground.rect.x = 1080
 
             if self.ground_2.rect.right <= 0:
-                self.ground_2.rect.x = settings.screen_width
+                self.ground_2.rect.x = 1080
 
         def wall_generator(self):
 
             # generate things for the new wall
             random_wall_height = random.randint(self.wall.wall_height_min, self.wall.wall_height_max)
             random_wall_width = random.randint(self.wall.wall_width_min, self.wall.wall_width_max)
-            random_wall_separator = random.randint(self.wall.wall_separator_min, self.wall.wall_separator_max)
 
-            # generate the first wall
-            if len(self.all_walls) < 1:
-                self.wall = Wall(random_wall_width, random_wall_height, settings.screen_width, self.ground.rect.top - random_wall_height + 50, self.wall.main_color)
-                self.all_walls.add(self.wall)
+            # generate infinite walls and increase difficulty
+            if self.wall.rect.right <= settings.screen_width - self.wall.wall_separator:
 
-            # generate infinite walls
-            if self.wall.rect.right <= settings.screen_width - random_wall_separator:
                 self.wall = Wall(random_wall_width, random_wall_height, settings.screen_width, self.ground.rect.top - random_wall_height, self.wall.main_color)
                 self.all_walls.add(self.wall)
 
             # target the last wall
-            first_sprite = self.all_walls.sprites()[0]
+            last_wall = self.all_walls.sprites()[0]
 
             # remove the last wall
-            if first_sprite.rect.right <= 0:
-                self.all_walls.remove(first_sprite)
+            if last_wall.rect.right <= 0:
+                self.all_walls.remove(last_wall)
 
                 # increase score
                 self.texts.score_value += 1
 
+                # increase difficulty
+                if self.texts.score_value % 10 == 0:
+                    self.scrolling_speed += 1
+
             # remove the start wall
             if self.wall_start.rect.right <= 0:
                 self.all_walls.remove(self.wall_start)
-
-        def increase_difficulty(self):
-
-            if self.texts.score_value == 10:
-                self.scrolling_speed = 6
-                self.wall_width_min = 450
-
-            if self.texts.score_value == 20:
-                self.scrolling_speed = 7
-                self.wall_width_min = 400
-
-            if self.texts.score_value == 30:
-                self.scrolling_speed = 8
-                self.wall_width_min = 350
-
-            if self.texts.score_value == 40:
-                self.scrolling_speed = 9
-                self.wall_width_min = 300
-
-            if self.texts.score_value == 50:
-                self.scrolling_speed = 10
-                self.wall_width_min = 250
-
-            if self.texts.score_value == 60:
-                self.scrolling_speed = 11
-                self.wall_width_min = 200
-
-            if self.texts.score_value == 70:
-                self.scrolling_speed = 12
-                self.wall_width_min = 125
-
-            if self.texts.score_value == 80:
-                self.scrolling_speed = 13
-                self.wall_width_min = 100
-
-            if self.texts.score_value == 90:
-                self.scrolling_speed = 14
-                self.wall_width_min = 75
-
-            if self.texts.score_value == 100:
-                self.scrolling_speed = 15
-                self.wall_width_min = 50
 
         def new_game(self):
 
@@ -206,11 +161,12 @@ async def main():
             self.all_grounds.empty()
 
             # replace grounds
-            self.ground = Ground(- settings.screen_width / 2, settings.screen_height - 100)
-            self.ground_2 = Ground(settings.screen_width / 2, settings.screen_height - 100)
+            self.ground = Ground(0, settings.screen_height - 100)
+            self.ground_2 = Ground(1080, settings.screen_height - 100)
+            self.ground_3 = Ground(0, settings.screen_height - 100)
 
             # replace the start wall
-            self.wall_start = Wall(settings.screen_width, 200, 0, settings.screen_height - 300, "black")
+            self.wall_start = Wall(settings.screen_width, 100, 0, settings.screen_height - 200, "black")
             self.all_walls.add(self.wall_start)
 
         def gravity_on(self):
@@ -283,7 +239,6 @@ async def main():
                 game.draw()
                 game.collisions()
                 game.display_score()
-                game.increase_difficulty()
                 game.wall_generator()
                 game.game_over = False
 

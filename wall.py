@@ -14,9 +14,8 @@ class Wall(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = pos_x
         self.rect.y = pos_y
-        self.wall_width_min = 500
+        self.wall_width_min = 100
         self.wall_width_max = 500
         self.wall_height_min = 50
-        self.wall_height_max = 400
-        self.wall_separator_min = 150
-        self.wall_separator_max = 250
+        self.wall_height_max = 250
+        self.wall_separator = 150
